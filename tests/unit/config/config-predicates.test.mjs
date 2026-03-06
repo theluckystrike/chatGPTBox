@@ -3,6 +3,11 @@ import { afterEach, beforeEach, describe, test } from 'node:test'
 import {
   getNavigatorLanguage,
   getPreferredLanguageKey,
+  chatgptApiModelKeys,
+  gptApiModelKeys,
+  claudeApiModelKeys,
+  openRouterApiModelKeys,
+  aimlApiModelKeys,
   isUsingAimlApiModel,
   isUsingAzureOpenAiApiModel,
   isUsingBingWebModel,
@@ -19,6 +24,7 @@ import {
   isUsingMultiModeModel,
   isUsingOllamaApiModel,
   isUsingOpenAiApiModel,
+  isUsingGptCompletionApiModel,
   isUsingOpenRouterApiModel,
 } from '../../../src/config/index.mjs'
 
@@ -64,21 +70,30 @@ test('getNavigatorLanguage treats zh-Hant locale as zhHant', () => {
 })
 
 test('isUsingChatgptApiModel detects chatgpt API models and excludes custom model', () => {
-  assert.equal(isUsingChatgptApiModel({ modelName: 'chatgptApi4oMini' }), true)
-  assert.equal(isUsingChatgptApiModel({ modelName: 'chatgptApi5' }), true)
-  assert.equal(isUsingChatgptApiModel({ modelName: 'chatgptApi5_1' }), true)
-  assert.equal(isUsingChatgptApiModel({ modelName: 'chatgptApi5_2' }), true)
-  assert.equal(isUsingChatgptApiModel({ modelName: 'chatgptApi5_4' }), true)
+  for (const modelName of chatgptApiModelKeys) {
+    assert.equal(isUsingChatgptApiModel({ modelName }), true)
+  }
   assert.equal(isUsingChatgptApiModel({ modelName: 'customModel' }), false)
 })
 
 test('isUsingOpenAiApiModel accepts both chat and completion API model groups', () => {
-  assert.equal(isUsingOpenAiApiModel({ modelName: 'chatgptApi4oMini' }), true)
-  assert.equal(isUsingOpenAiApiModel({ modelName: 'gptApiInstruct' }), true)
+  for (const modelName of chatgptApiModelKeys) {
+    assert.equal(isUsingOpenAiApiModel({ modelName }), true)
+  }
+  for (const modelName of gptApiModelKeys) {
+    assert.equal(isUsingOpenAiApiModel({ modelName }), true)
+  }
 })
 
 test('isUsingOpenAiApiModel excludes custom model', () => {
   assert.equal(isUsingOpenAiApiModel({ modelName: 'customModel' }), false)
+})
+
+test('isUsingGptCompletionApiModel accepts all completion API model keys', () => {
+  for (const modelName of gptApiModelKeys) {
+    assert.equal(isUsingGptCompletionApiModel({ modelName }), true)
+  }
+  assert.equal(isUsingGptCompletionApiModel({ modelName: 'chatgptApi4oMini' }), false)
 })
 
 test('isUsingCustomModel works with modelName and apiMode forms', () => {
@@ -117,8 +132,9 @@ test('isUsingGeminiWebModel detects bard/gemini web models', () => {
 })
 
 test('isUsingClaudeApiModel detects Claude API models', () => {
-  assert.equal(isUsingClaudeApiModel({ modelName: 'claude37SonnetApi' }), true)
-  assert.equal(isUsingClaudeApiModel({ modelName: 'claudeOpus4Api' }), true)
+  for (const modelName of claudeApiModelKeys) {
+    assert.equal(isUsingClaudeApiModel({ modelName }), true)
+  }
   assert.equal(isUsingClaudeApiModel({ modelName: 'claude2WebFree' }), false)
 })
 
@@ -135,16 +151,16 @@ test('isUsingDeepSeekApiModel detects DeepSeek models', () => {
 })
 
 test('isUsingOpenRouterApiModel detects OpenRouter models', () => {
-  assert.equal(
-    isUsingOpenRouterApiModel({ modelName: 'openRouter_anthropic_claude_sonnet4' }),
-    true,
-  )
-  assert.equal(isUsingOpenRouterApiModel({ modelName: 'openRouter_openai_o3' }), true)
+  for (const modelName of openRouterApiModelKeys) {
+    assert.equal(isUsingOpenRouterApiModel({ modelName }), true)
+  }
   assert.equal(isUsingOpenRouterApiModel({ modelName: 'chatgptApi4oMini' }), false)
 })
 
 test('isUsingAimlApiModel detects AI/ML models', () => {
-  assert.equal(isUsingAimlApiModel({ modelName: 'aiml_claude_3_7_sonnet_20250219' }), true)
+  for (const modelName of aimlApiModelKeys) {
+    assert.equal(isUsingAimlApiModel({ modelName }), true)
+  }
   assert.equal(isUsingAimlApiModel({ modelName: 'chatgptApi4oMini' }), false)
 })
 
